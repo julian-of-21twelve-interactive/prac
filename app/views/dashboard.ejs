@@ -1,0 +1,229 @@
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+
+<body>
+    <!---->
+    <main>
+        <div class="container-fluid my-5">
+            <div class="card-body text-center">
+                <h4 class="card-title">21Twelve Practile</h4>
+            </div>
+            <div class="card">
+                <button id="add__new__list" type="button" class="btn btn-success position-absolute" data-toggle="modal"
+                    data-target=".bd-example-modal-lg"><i class="fas fa-plus"></i> Add a new
+                    User</button>
+                <% if(users.length) { %>
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">User name</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Task Name</th>
+                                <th scope="col">Task Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% for(var i=0; i < users.length; i++) { %>
+                                <tr>
+                                    <th scope="row">
+                                        <%= users[i].id %>
+                                    </th>
+                                    <td>
+                                        <%= users[i].userName %>
+                                    </td>
+                                    <td>
+                                        <%= users[i].email %>
+                                    </td>
+                                    <td>
+                                        <%= users[i].taskName %>
+                                    </td>
+                                    <td>
+                                        <%= users[i].taskDescription %>
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-sm btn-primary" href="/user/edit/<%= users[i].id %>"><i
+                                                class="far fa-edit"></i> edit</a>
+                                        <a class="btn btn-sm btn-danger" href="/user/delete/<%= users[i].id %>"><i
+                                                class="fas fa-trash-alt"></i>
+                                            delete</a>
+                                        <a class="btn btn-sm btn-info task-details" href="#"
+                                            data-task-title="<%= users[i].taskName %>"
+                                            data-task-description="<%= users[i].taskDescription %>"
+                                            data-form-number="<%= users[i].formNumber %>">
+                                            
+                                            <i class="fas fa-info-circle"></i> Details
+                                        </a>
+                                    </td>
+                                </tr>
+                                <% } %>
+                        </tbody>
+                    </table>
+                    <% } %>
+            </div>
+            <!-- Large modal -->
+
+            <div id="taskPopup" class="task-popup">
+                <div class="task-popup-content">
+                    <!-- Task details -->
+                    <h4 id="taskTitle"></h4>
+                    <h4 id="taskDescription"></h4>
+                    <h4 id="formNumber"></h4>
+                    <!-- Close button -->
+                    <span class="close-button">&times;</span>
+                </div>
+            </div>
+            <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="card-body text-center">
+                            <h4 class="card-title">Special title treatment</h4>
+                            <p class="card-text">With supporting text below as a natural lead-in to additional content.
+                            </p>
+                        </div>
+                        <div class=" card col-8 offset-2 my-2 p-3">
+                            <form>
+                                <div class="form-group">
+                                    <label for="listname">List name</label>
+                                    <input type="text" class="form-control" name="listname" id="listname"
+                                        placeholder="Enter your listname">
+                                </div>
+                                <div class="form-group">
+                                    <label for="datepicker">Deadline</label>
+                                    <input type="text" class="form-control" name="datepicker" id="datepicker"
+                                        placeholder="Pick up a date">
+                                </div>
+                                <div class="form-group">
+                                    <label for="datepicker">Add a list item</label>
+                                    <div class="input-group">
+
+                                        <input type="text" class="form-control" placeholder="Add an item"
+                                            aria-label="Search for...">
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-secondary" type="button">Go!</button>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-group text-center">
+                                    <button type="submit" class="btn btn-block btn-primary">Sign in</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!---->
+</body>
+<script>
+    // Get the button element by its ID
+    const addButton = document.getElementById('add__new__list');
+
+    // Add an event listener to the button
+    addButton.addEventListener('click', function () {
+        // Change the window location or redirect to a new URL
+        window.location.href = 'http://localhost:9000/user/login'; // Replace with the desired URL
+    });
+
+    const taskDetailsLinks = document.getElementsByClassName('task-details');
+
+    // Get the popup and its content elements by their IDs
+    const taskPopup = document.getElementById('taskPopup');
+    const taskTitle = document.getElementById('taskTitle');
+    const formNumber = document.getElementById('formNumber');
+    const taskDescription = document.getElementById('taskDescription');
+
+    // Add event listeners to each task details link
+    Array.from(taskDetailsLinks).forEach(function (link) {
+        link.addEventListener('click', function (event) {
+            event.preventDefault();
+
+            // Get the task details from the link's data attributes
+            const title = this.getAttribute('data-task-title');
+            const description = this.getAttribute('data-task-description');
+            const formData = this.getAttribute('data-form-number');
+
+            // Set the task details in the popup
+            taskTitle.textContent = title;
+            taskDescription.textContent = description;
+            formNumber.textContent = formData;
+
+            // Show the popup
+            taskPopup.style.display = 'block';
+        });
+    });
+
+    // Add an event listener to the close button
+    taskPopup.addEventListener('click', function (event) {
+        if (event.target.classList.contains('close-button')) {
+            // Hide the popup when the close button is clicked
+            taskPopup.style.display = 'none';
+        }
+    });
+</script>
+
+<style>
+    body {
+        background-image: url(https://static.pexels.com/photos/371633/pexels-photo-371633.jpeg);
+        background-repeat: no-repeat;
+        background-size: 100%;
+    }
+
+    footer {
+
+        margin-top: 20px;
+        padding-top: 20px;
+    }
+
+    .bg__card__navbar {
+        background-color: #000000;
+    }
+
+    .bg__card__footer {
+        background-color: #000000 !important;
+    }
+
+    #add__new__list {
+        top: -38px;
+        right: 0px;
+    }
+
+    .task-popup {
+        display: none;
+        /* Hide the popup by default */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        /* Semi-transparent background */
+    }
+
+    /* Style for the popup content */
+    .task-popup-content {
+        background-color: #fff;
+        padding: 20px;
+        width: 400px;
+        height: 300px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    /* Style for the close button */
+    .close-button {
+        color: #aaa;
+        font-size: 24px;
+        font-weight: bold;
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        cursor: pointer;
+    }
+</style>
